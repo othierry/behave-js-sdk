@@ -48,6 +48,7 @@
 
 <ul>
 <li><a href="#identify">Identify</a></li>
+<li><a href="#retrieve-a-player">Retrieve a player</a></li>
 </ul>
 </li>
 <li>
@@ -64,15 +65,15 @@
 
 <ul>
 <li><a href="#getting-leaderboard-current-results">Getting leaderboard results</a></li>
-<li><a href="#getting-leaderboard-results-for-the-currently-identified-player">Getting leaderboard results for the currently identified player</a></li>
+<li><a href="#getting-leaderboard-results-for-the-currently-identified-player">Getting leaderboard results for a player</a></li>
 </ul>
 </li>
 <li>
 <a href="#badges">Badges</a>
 
 <ul>
-<li><a href="#getting-unlocked-badges-of-the-currently-identified-player">Getting unlocked badges of the currently identified player</a></li>
-<li><a href="#getting-locked-badges-of-the-currently-identified-player">Getting locked badges of the currently identified player</a></li>
+<li><a href="#getting-unlocked-badges-of-the-currently-identified-player">Getting unlocked badges of a player</a></li>
+<li><a href="#getting-locked-badges-of-the-currently-identified-player">Getting locked badges of a player</a></li>
 </ul>
 </li>
 <li>
@@ -119,6 +120,8 @@ You can find the API token <a href="http://dashboard.behave.io/#/settings" targe
 
 <p>You need to identify your users at least once so their player profiles can be created. You can optionally attribute some traits to the player than you can update/retrieve at any time.</p>
 
+<p>The identified Player can be retrieved using <code>behave.player</code></p>
+
 <p><strong>Note:</strong> If you start tracking behaviours of a player that you have not yet identified using <code>identify()</code>, it will be automatically anonymously identified for you. An anonymous player act as a normal player but is <strong>temporary</strong> and is binded to the user's session. Once you can <code>identify()</code> the player, it will be converted to a regular player automatically.</p>
 
 <ul>
@@ -154,7 +157,7 @@ You can find the API token <a href="http://dashboard.behave.io/#/settings" targe
 <span class="p">});</span>
 </pre></div>
 
-<p>The identified Player can be retrieved using <code>behave.player</code> and has the following attributes.</p>
+<p>A player has the following default attributes:</p>
 
 <table>
 <thead><tr>
@@ -190,6 +193,42 @@ You can find the API token <a href="http://dashboard.behave.io/#/settings" targe
 </tr>
 </tbody>
 </table><p><strong>NOTE:</strong> The player will load asynchronously so calling <code>behave.player</code> right after <code>behave.identify()</code> will be the right player but its points, level and traits may not have loaded yet. Your app can easily listen to events to have control when the player has been fully identified and more. Please refer to <a href="#events">Events</a> for more information.</p>
+
+<h3>
+<a name="retrieve-a-player" class="anchor" href="#retrieve-a-player"><span class="octicon octicon-link"></span></a>Retrieve a player</h3>
+
+<p>Sometimes you want to retrieve a player's profile without having to identify() him. You can retrieve a player by sending a GET request.</p>
+
+<ul>
+<li>
+<strong>Method:</strong> behave.fetchPlayer(playerId, callback)</li>
+<li><strong>Parameters:</strong></li>
+</ul><p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">behave</span><span class="p">.</span><span class="nx">fetchPlayer</span><span class="p">(</span><span class="s1">'42'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">player</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// Use player</span>
+<span class="p">});</span>
+
+<span class="c1">// Player will look like this</span>
+<span class="p">{</span>
+  <span class="s2">"data"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"reference_id"</span><span class="o">:</span> <span class="s2">"42"</span><span class="p">,</span>
+    <span class="s2">"points"</span><span class="o">:</span> <span class="mi">4244</span><span class="p">,</span>
+    <span class="s2">"level"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"Newbie"</span><span class="p">,</span>
+      <span class="s2">"message"</span><span class="o">:</span> <span class="s2">""</span><span class="p">,</span>
+      <span class="s2">"nextLevelPoints"</span><span class="o">:</span> <span class="mi">5000</span><span class="p">,</span>
+      <span class="s2">"progress"</span><span class="o">:</span> <span class="mf">84.88</span>
+    <span class="p">}</span>
+    <span class="s2">"traits"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"olivier@behave.io"</span><span class="p">,</span>
+      <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"Olivier Thierry"</span><span class="p">,</span>
+      <span class="s2">"picture"</span><span class="o">:</span> <span class="s2">"http://url_to_picture"</span><span class="p">,</span>
+      <span class="s2">"foo"</span><span class="o">:</span> <span class="s2">"bar"</span>
+    <span class="p">}</span>  
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
 
 <h2>
 <a name="behaviours" class="anchor" href="#behaviours"><span class="octicon octicon-link"></span></a>Behaviours</h2>
@@ -486,15 +525,21 @@ You can find the API token <a href="http://dashboard.behave.io/#/settings" targe
 </pre></div>
 
 <h3>
-<a name="getting-leaderboard-results-for-the-currently-identified-player" class="anchor" href="#getting-leaderboard-results-for-the-currently-identified-player"><span class="octicon octicon-link"></span></a>Getting leaderboard results for the currently identified player</h3>
+<a name="getting-leaderboard-results-for-a-player" class="anchor" href="#getting-leaderboard-results-for-a-player"><span class="octicon octicon-link"></span></a>Getting leaderboard results for a player</h3>
 
 <p>You can also fetch results for a particular player. Let's say you want to fetch the results of a player on one, many or even ALL the leaderboards <strong>the player is in</strong> then you can use this to do so.</p>
 
 <ul>
 <li>
-<strong>Method:</strong> behave.player.fetchLeaderboardResults([options], callback)</li>
+<p><strong>Method(s):</strong> </p>
+
+<ul>
 <li>
-<strong>Parameters:</strong> </li>
+<code>behave.player.fetchLeaderboardResults([options], callback)</code> (for the <strong>currently identified player</strong>)</li>
+<li><code>behave.fetchPlayerLeaderboardResults(playerId, [options], callback)</code></li>
+</ul>
+</li>
+<li><p><strong>Parameters:</strong> </p></li>
 </ul><table>
 <thead><tr>
 <th>Name</th>
@@ -588,11 +633,18 @@ You can find the API token <a href="http://dashboard.behave.io/#/settings" targe
 <a name="badges" class="anchor" href="#badges"><span class="octicon octicon-link"></span></a>Badges</h2>
 
 <h3>
-<a name="getting-unlocked-badges-of-the-currently-identified-player" class="anchor" href="#getting-unlocked-badges-of-the-currently-identified-player"><span class="octicon octicon-link"></span></a>Getting UNLOCKED badges of the currently identified player</h3>
+<a name="getting-unlocked-badges-of-a-player" class="anchor" href="#getting-unlocked-badges-of-a-player"><span class="octicon octicon-link"></span></a>Getting unlocked badges of a player</h3>
 
 <ul>
 <li>
-<strong>Method:</strong> behave.player.fetchBadges(callback)</li>
+<p><strong>Method:</strong> </p>
+
+<ul>
+<li>
+<code>behave.player.fetchBadges(callback)</code> (for the <strong>currently identified player</strong>)</li>
+<li><code>behave.fetchPlayerBadge(playerId, callback)</code></li>
+</ul>
+</li>
 </ul><p>Example:</p>
 
 <div class="highlight highlight-javascript"><pre><span class="nx">behave</span><span class="p">.</span><span class="nx">player</span><span class="p">.</span><span class="nx">fetchBadges</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">badges</span><span class="p">)</span> <span class="p">{</span>
@@ -672,11 +724,17 @@ You can find the API token <a href="http://dashboard.behave.io/#/settings" targe
 </pre></div>
 
 <h3>
-<a name="getting-locked-badges-of-the-currently-identified-player" class="anchor" href="#getting-locked-badges-of-the-currently-identified-player"><span class="octicon octicon-link"></span></a>Getting LOCKED badges of the currently identified player</h3>
+<a name="getting-locked-badges-of-a-player" class="anchor" href="#getting-locked-badges-of-a-player"><span class="octicon octicon-link"></span></a>Getting locked badges of a player</h3>
 
 <ul>
 <li>
-<strong>Method:</strong> behave.player.fetchLockedBadges(callbacl)</li>
+<p><strong>Method(s):</strong> </p>
+
+<ul>
+<li>behave.player.fetchLockedBadges(callback)  (for the <strong>currently identified player</strong>)</li>
+<li>behave.fetchPlayerLockedBadges(playerId, callback) </li>
+</ul>
+</li>
 </ul><p>Example:</p>
 
 <div class="highlight highlight-javascript"><pre><span class="nx">behave</span><span class="p">.</span><span class="nx">fetchLockedBadges</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">lockedBadges</span><span class="p">)</span> <span class="p">{</span>
