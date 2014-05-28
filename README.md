@@ -1,4 +1,4 @@
 behave-js-sdk
 =============
 
-Behave Javascript SDK
+** SDK Documentation available [HERE](http://othierry.github.io/behave-js-sdk/) **
