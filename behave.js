@@ -65,21 +65,15 @@
   // Fetch the current player badges (owned)
   // @param callback function : The callback
   Player.prototype.fetchBadges = function(callback) {
-    var self = this;
     if (!behave.assertPlayerIsIdentified(callback)) return;
-    behave.requestQueue.push({
-      path: '/players/' + self.referenceId + '/badges'
-    }, behave.responseHandler(callback));
+    behave.fetchPlayerBadges(this.referenceId, callback);
   };
 
   // Fetch the current player locked badges (not owned)
   // @param callback function : The callback
   Player.prototype.fetchLockedBadges = function(callback) {
-    var self = this;
     if (!behave.assertPlayerIsIdentified(callback)) return;
-    behave.requestQueue.push({
-      path: '/players/' + self.referenceId + '/badges/todo'
-    }, behave.responseHandler(callback));
+    behave.fetchPlayerLockedBadges(this.referenceId, callback);
   };
 
   // Fetch ALL the leaderboard results FOR the current player
@@ -90,19 +84,8 @@
   //      ignored.
   // @param callback function : callback
   Player.prototype.fetchLeaderboardResults = function(options, callback) {
-    var self = this;
-    callback = (typeof options === 'function' ? options : callback);
-    options  = (typeof options === 'object'   ? options : {});
-
     if (!behave.assertPlayerIsIdentified(callback)) return;
-
-    options.player_id = self.referenceId;
-
-    behave.requestQueue.push({
-      path: '/leaderboards/player-results',
-      method: 'POST',
-      params: options
-    }, behave.responseHandler(callback));    
+    behave.fetchPlayerLeaderboardResults(this.referenceId, options, callback);
   };
 
   // Fetch a specific leaderboard result for the current player
@@ -110,17 +93,8 @@
   // @param options object (optional) : fetch iptions
   // @param callback function : callback
   Player.prototype.fetchLeaderboardResult = function(leaderboardId, options, callback) {
-    var self = this;
-    callback = (typeof options === 'function' ? options : callback);
-    options  = (typeof options === 'object'   ? options : {});
-
     if (!behave.assertPlayerIsIdentified(callback)) return;
-   
-    options.leaderboards = [leaderboardId];
-
-    self.fetchLeaderboardResults(options, function(err, results) {
-      if (callback) { callback(err, results ? results[0] : null); }
-    });
+    behave.fetchPlayerLeaderboardResult(this.referenceId, leaderboardId, options, callback);
   };
 
   if (!window.behave) {
@@ -274,6 +248,33 @@
       }));
     };
 
+    // Fetch the given player
+    // @param playerId string : The player's reference id
+    // @param callback function : The callback
+    behave.fetchPlayer = function(playerId, callback) {
+      behave.requestQueue.push({
+        path: '/players/' + playerId
+      }, behave.responseHandler(callback));
+    };
+
+    // Fetch the given player badges (unlocked)
+    // @param playerId string : The player's reference id
+    // @param callback function : The callback
+    behave.fetchPlayerBadges = function(playerId, callback) {
+      behave.requestQueue.push({
+        path: '/players/' + playerId + '/badges'
+      }, behave.responseHandler(callback));
+    };
+
+    // Fetch the given player locked badges (not owned)
+    // @param playerId string : The player's reference id
+    // @param callback function : The callback
+    behave.fetchPlayerLockedBadges = function(playerId, callback) {
+      behave.requestQueue.push({
+        path: '/players/' + playerId + '/badges/todo'
+      }, behave.responseHandler(callback));
+    };
+
     // Fetch a specific leaderboard results
     // @param leaderboardId string : The leaderboard's reference_id
     // @param options object (optional) : fetch options
@@ -347,6 +348,45 @@
         }
       });
     }
+
+    // Fetch ALL the leaderboard results FOR the given player
+    // It will return all the leaderboards the player is currently in.
+    // @param playerId string : The player reference id
+    // @param options object (optional) : fetch options
+    //    - leaderboards (Array) : reference_id(s) of leaderboard to fetch result from (all by default)
+    //    - max (Number) : if specified (>0) the leaderboards when the player's position is > max will be
+    //      ignored.
+    // @param callback function : callback
+    behave.fetchPlayerLeaderboardResults = function(playerId, options, callback) {
+      var self = this;
+      callback = (typeof options === 'function' ? options : callback);
+      options  = (typeof options === 'object'   ? options : {});
+
+      options.player_id = playerId;
+
+      behave.requestQueue.push({
+        path: '/leaderboards/player-results',
+        method: 'POST',
+        params: options
+      }, behave.responseHandler(callback));
+    };
+
+    // Fetch a specific leaderboard result for the given player
+    // @param playerId string : The player reference id
+    // @param leaderboardId string : The leaderboard's reference id
+    // @param options object (optional) : fetch options
+    // @param callback function : callback
+    behave.fetchPlayerLeaderboardResult = function(playerId, leaderboardId, options, callback) {
+      var self = this;
+      callback = (typeof options === 'function' ? options : callback);
+      options  = (typeof options === 'object'   ? options : {});
+     
+      options.leaderboards = [leaderboardId];
+
+      behave.fetchPlayerLeaderboardResults(playerId, options, function(err, results) {
+        if (callback) { callback(err, results ? results[0] : null); }
+      });
+    };
 
     behave.assertInitialized = function(callback) {
       if (!behave.token) {
