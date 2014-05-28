@@ -1,0 +1,794 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Behave-js-sdk by othierry</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Behave-js-sdk</h1>
+        <p class="header">Behave Javascript SDK</p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/othierry/behave-js-sdk/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/othierry/behave-js-sdk/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/othierry/behave-js-sdk">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/othierry">othierry</a></p>
+
+
+      </header>
+      <section>
+        <h1>
+<a name="introduction" class="anchor" href="#introduction"><span class="octicon octicon-link"></span></a>Introduction</h1>
+
+<p>Our JavaScript library lets you easily identify your users, track their behaviours, handle rewards and make full use of the API.</p>
+
+<ol>
+<li>
+<a href="#getting-started">Getting started</a>
+
+<ul>
+<li><a href="#initializing-the-sdk">Initializing the SDK</a></li>
+</ul>
+</li>
+<li>
+<a href="#players">Players</a>
+
+<ul>
+<li><a href="#identify">Identify</a></li>
+</ul>
+</li>
+<li>
+<a href="#behaviours">Behaviours</a>
+
+<ul>
+<li><a href="#simple-tracking">Simple tracking</a></li>
+<li><a href="#contextual-tracking">Contextual tracking</a></li>
+<li><a href="#using-the-tracking-response">Using the tracking response</a></li>
+</ul>
+</li>
+<li>
+<a href="#leaderboards">Leaderboards</a>
+
+<ul>
+<li><a href="#getting-leaderboard-current-results">Getting leaderboard results</a></li>
+<li><a href="#getting-leaderboard-results-for-the-currently-identified-player">Getting leaderboard results for the currently identified player</a></li>
+</ul>
+</li>
+<li>
+<a href="#badges">Badges</a>
+
+<ul>
+<li><a href="#getting-unlocked-badges-of-the-currently-identified-player">Getting unlocked badges of the currently identified player</a></li>
+<li><a href="#getting-locked-badges-of-the-currently-identified-player">Getting locked badges of the currently identified player</a></li>
+</ul>
+</li>
+<li>
+<a href="#events">Events</a>
+
+<ul>
+<li><a href="#realtime-sdk-events">Realtime SDK events</a></li>
+<li><a href="#subscribing-to-an-event">Subscribing to an event</a></li>
+<li><a href="#unsubscribing-to-an-event">Unsubscribing to an event</a></li>
+</ul>
+</li>
+</ol><h2>
+<a name="getting-started" class="anchor" href="#getting-started"><span class="octicon octicon-link"></span></a>Getting started</h2>
+
+<h3>
+<a name="initializing-the-sdk" class="anchor" href="#initializing-the-sdk"><span class="octicon octicon-link"></span></a>Initializing the SDK</h3>
+
+<p>Before starting to do anything, you need to initialize the SDK with a valid API access token.
+You can find the token from your dashboard within the app settings.</p>
+
+<p>Within the <code>&lt;head&gt;&lt;/head&gt;</code> tag insert the following code to load the library</p>
+
+<div class="highlight highlight-javascript"><pre><span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">"https://s3-eu-west-1.amazonaws.com/behave-production/libs/js/1.1.0/behave.js"</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+</pre></div>
+
+<p>In the <code>&lt;body&gt;&lt;/body&gt;</code> tag, insert the code and replace <em>YOUR_API_TOKEN</em> by your API token</p>
+
+<div class="highlight highlight-javascript"><pre><span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+  <span class="nx">behave</span><span class="p">.</span><span class="nx">init</span><span class="p">(</span><span class="s1">'YOUR_API_TOKEN'</span><span class="p">);</span>
+<span class="o">&lt;</span><span class="err">/script&gt;</span>
+</pre></div>
+
+<h2>
+<a name="players" class="anchor" href="#players"><span class="octicon octicon-link"></span></a>Players</h2>
+
+<h3>
+<a name="identify" class="anchor" href="#identify"><span class="octicon octicon-link"></span></a>Identify</h3>
+
+<p>You need to identify your users at least once so their player profiles can be created. You can optionally attribute some traits to the player than you can update/retrieve at any time.</p>
+
+<p><strong>Note:</strong> If you start tracking behaviours of a player that you have not yet identified using <code>identify()</code>, it will be automatically anonymously identified for you. An anonymous player act as a normal player but is <strong>temporary</strong> and is binded to the user's session. Once you can <code>identify()</code> the player, it will be converted to a regular player automatically.</p>
+
+<ul>
+<li>
+<strong>Method:</strong> behave.identify(referenceId, [traits], [callback])</li>
+<li><strong>Parameters:</strong></li>
+</ul><table>
+<thead><tr>
+<th>Name</th>
+<th align="center">Type</th>
+<th align="right">Value</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>referenceId</td>
+<td align="center">String</td>
+<td align="right">
+<strong>(Required)</strong> The id of the player in YOUR database</td>
+</tr>
+<tr>
+<td>traits</td>
+<td align="center">Object</td>
+<td align="right">(optional) The custom traits you assign to the player. You can use any key-value pair to give attributes to the player. The 2 special fields: <code>name</code> and <code>picture</code> will be used as display information from the admin interface. We recommend to specify them if you can.</td>
+</tr>
+</tbody>
+</table><p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">behave</span><span class="p">.</span><span class="nx">identify</span><span class="p">(</span><span class="s1">'42'</span><span class="p">,</span> <span class="p">{</span>
+  <span class="nx">email</span>   <span class="o">:</span> <span class="s1">'olivier@behave.io'</span><span class="p">,</span>
+  <span class="nx">name</span>    <span class="o">:</span> <span class="s1">'Olivier Thierry'</span><span class="p">,</span>
+  <span class="nx">picture</span> <span class="o">:</span> <span class="s1">'http://url_to_picture'</span><span class="p">,</span>
+  <span class="nx">foo</span>     <span class="o">:</span> <span class="s1">'bar'</span>  
+<span class="p">});</span>
+</pre></div>
+
+<p>The identified Player can be retrieved using <code>behave.player</code> and has the following attributes.</p>
+
+<table>
+<thead><tr>
+<th>Name</th>
+<th align="center">Type</th>
+<th align="right">Value</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>_id</td>
+<td align="center">String</td>
+<td align="right">The id of the Player</td>
+</tr>
+<tr>
+<td>reference_id</td>
+<td align="center">String</td>
+<td align="right">The custom unique id you have specified to identify this player</td>
+</tr>
+<tr>
+<td>points</td>
+<td align="center">Number</td>
+<td align="right">The number of points of the player (default to 0)</td>
+</tr>
+<tr>
+<td>level</td>
+<td align="center">Object</td>
+<td align="right">The current level of the player (and its progress), null otherwise.</td>
+</tr>
+<tr>
+<td>traits</td>
+<td align="center">Object</td>
+<td align="right">The custom traits you have given to the player</td>
+</tr>
+</tbody>
+</table><p><strong>NOTE:</strong> The player will load asynchronously so calling <code>behave.player</code> right after <code>behave.identify()</code> will be the right player but its points, level and traits may not have loaded yet. Your app can easily listen to events to have control when the player has been fully identified and more. Please refer to <a href="#events">Events</a> for more information.</p>
+
+<h2>
+<a name="behaviours" class="anchor" href="#behaviours"><span class="octicon octicon-link"></span></a>Behaviours</h2>
+
+<p>You need to track your players behaviours if you want to reward them for doing so! Tracking can be either <strong>simple</strong> or <strong>contextual</strong>. You can specify ANY key value pairs to describe the context to which the behaviour was taken (See examples below):</p>
+
+<ul>
+<li>
+<strong>Method:</strong> behave.track(verb, [context], [callback])</li>
+<li><strong>Parameters:</strong></li>
+</ul><table>
+<thead><tr>
+<th>Name</th>
+<th align="center">Type</th>
+<th align="right">Value</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>verb</td>
+<td align="center">String</td>
+<td align="right">
+<strong>(Required)</strong> The name of the behaviour you are tracking</td>
+</tr>
+<tr>
+<td>context</td>
+<td align="center">Object</td>
+<td align="right">(optional) You can specify ANY key value pairs to describe the context to which the behaviour was taken. Optionally, A special field <code>timestamp</code> <strong>(unix timestamp)</strong> defines when was this behaviour taken. <strong>Make sure you specify a timestamp when importing data</strong>. We will use the server's current time by default.</td>
+</tr>
+</tbody>
+</table><p><strong>NOTE:</strong> Your app can easily listen to reward events to have control when the player has earned points, unlocked badges and more. Please refer to <a href="#events">Events</a> for more information.</p>
+
+<h3>
+<a name="simple-tracking" class="anchor" href="#simple-tracking"><span class="octicon octicon-link"></span></a>Simple tracking</h3>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">behave</span><span class="p">.</span><span class="nx">track</span><span class="p">(</span><span class="s1">'login'</span><span class="p">);</span>
+</pre></div>
+
+<h3>
+<a name="contextual-tracking" class="anchor" href="#contextual-tracking"><span class="octicon octicon-link"></span></a>Contextual tracking</h3>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">behave</span><span class="p">.</span><span class="nx">track</span><span class="p">(</span><span class="s1">'check-in'</span><span class="p">,</span> <span class="p">{</span>
+  <span class="nx">placeId</span><span class="o">:</span> <span class="mi">24</span><span class="p">,</span>
+  <span class="nx">withFriends</span><span class="o">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">435</span><span class="p">]</span>
+<span class="p">});</span>
+</pre></div>
+
+<h3>
+<a name="using-the-tracking-response" class="anchor" href="#using-the-tracking-response"><span class="octicon octicon-link"></span></a>Using the tracking response</h3>
+
+<p>When you track a user behaviour, you get back a response of basically what happened. The response contains the actions that the tracking has triggered (from your <a href="http://dashboard.behave.io/recipes">recipes</a>).</p>
+
+<p>The response <strong>always contains 4 attributes</strong>.</p>
+
+<table>
+<thead><tr>
+<th>Name</th>
+<th align="center">Type</th>
+<th align="right">Value</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>badges</td>
+<td align="center">Array[Object]</td>
+<td align="right">The unlocked badges</td>
+</tr>
+<tr>
+<td>points</td>
+<td align="center">Object</td>
+<td align="right">With 2 attributes: <code>earned</code> and <code>balance</code>. <code>earned</code> is the number of points the user earned by taking the action or 0 if no points earned, <code>balance</code> is the updated balance of the player points</td>
+</tr>
+<tr>
+<td>level</td>
+<td align="center">Object</td>
+<td align="right">The current level of the player, null otherwise.</td>
+</tr>
+<tr>
+<td>leaderboards</td>
+<td align="center">Array[Object]</td>
+<td align="right">Leaderboard updates (if any,  empty otherwise). See bellow for detailed structure</td>
+</tr>
+</tbody>
+</table><p>Behave SDK will publish events when player is identified, when badges are unlocked, when a level is reached and more. Refer to <a href="#events">Events</a> for more information</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">behave</span><span class="p">.</span><span class="nx">track</span><span class="p">(</span><span class="s1">'check-in'</span><span class="p">,</span> <span class="p">{</span>
+  <span class="nx">playerId</span><span class="o">:</span> <span class="mi">42</span><span class="p">,</span>
+  <span class="nx">placeName</span><span class="o">:</span> <span class="s1">'Deloitte'</span><span class="p">,</span>
+  <span class="nx">withMates</span><span class="o">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">12</span><span class="p">]</span>
+<span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">results</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// Use results here</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>Example accessing <code>results.points</code> attribute.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="o">&gt;</span> <span class="nx">results</span><span class="p">.</span><span class="nx">points</span>
+<span class="p">{</span> 
+  <span class="c1">// The number of points the user earned by taking the action</span>
+  <span class="s1">'earned'</span>  <span class="o">=&gt;</span> <span class="mi">0</span><span class="p">,</span> 
+
+  <span class="c1">// The player's updated balance including the points he just earned</span>
+  <span class="s1">'balance'</span> <span class="o">=&gt;</span> <span class="mi">840</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>If not empty <code>results.badges</code> contains the Badges that the user has just unlocked. The structure looks like this:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="o">&gt;</span> <span class="nx">results</span><span class="p">.</span><span class="nx">badges</span>
+<span class="p">[</span>
+  <span class="p">{</span>
+    <span class="c1">// Reward id</span>
+    <span class="nx">_id</span> <span class="o">:</span> <span class="s2">"52a01b67cc7df72c79000003"</span><span class="p">,</span>
+    <span class="c1">// Number of times this reward was earned by this player</span>
+    <span class="nx">count</span> <span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="c1">// Badge definition</span>
+    <span class="nx">badge</span> <span class="o">:</span> <span class="p">{</span>
+      <span class="c1">// Badge id</span>
+      <span class="nx">_id</span>           <span class="o">:</span> <span class="s2">"529fff2356ce248366000006"</span><span class="p">,</span>
+      <span class="c1">// Badge custom id you have defined, null otherwise</span>
+      <span class="nx">reference_id</span>  <span class="o">:</span> <span class="s2">"deloitte-newbie-badge"</span><span class="p">,</span>
+      <span class="c1">// badge name</span>
+      <span class="nx">name</span>          <span class="o">:</span> <span class="s2">"Deloitte Newbie"</span><span class="p">,</span>
+      <span class="c1">// badge hint</span>
+      <span class="nx">hint</span>          <span class="o">:</span> <span class="s2">"Check-in 2 times at Deloitte"</span><span class="p">,</span>
+      <span class="c1">// badge unlock message</span>
+      <span class="nx">message</span>       <span class="o">:</span> <span class="s2">"Whooa! Look like you are new in da place. keep the effort and you will be rewarded."</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+</pre></div>
+
+<p>If not empty, <code>results.leaderboards</code> will contain something like this</p>
+
+<div class="highlight highlight-javascript"><pre><span class="o">&gt;</span> <span class="nx">results</span><span class="p">.</span><span class="nx">leaderboards</span>
+<span class="p">[</span>
+  <span class="p">{</span>
+     <span class="c1">// The updated leaderboard</span>
+     <span class="nx">leaderboard</span> <span class="o">:</span> <span class="p">{</span>
+        <span class="nx">_id</span> <span class="o">:</span> <span class="s1">'529fff1156ce248366000006'</span><span class="p">,</span>
+        <span class="nx">reference_id</span> <span class="o">:</span> <span class="s1">'test-lb'</span>
+     <span class="p">},</span>
+     <span class="c1">// Player's position before the update</span>
+     <span class="nx">prev_position</span>    <span class="o">:</span> <span class="mi">5</span><span class="p">,</span>
+     <span class="c1">// Player's position after the update</span>
+     <span class="nx">post_position</span>    <span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+     <span class="c1">// Player's updated score</span>
+     <span class="nx">score</span>            <span class="o">:</span> <span class="mi">435</span><span class="p">,</span>
+   <span class="p">}</span>
+<span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>If not null (leveling system active and valid), <code>results.level</code> will contain the current level of the player and its progression.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="o">&gt;</span> <span class="nx">results</span><span class="p">.</span><span class="nx">level</span>
+<span class="p">[</span>
+  <span class="p">{</span>
+    <span class="c1">// Level name</span>
+    <span class="nx">name</span><span class="o">:</span> <span class="s1">'Newbie'</span><span class="p">,</span>
+    <span class="c1">// Message associated to the level</span>
+    <span class="nx">message</span><span class="o">:</span> <span class="s1">'You are ...'</span>
+    <span class="c1">// Level progress (/100)</span>
+    <span class="nx">progress</span><span class="o">:</span> <span class="mi">28</span><span class="p">,</span>
+    <span class="c1">// How many points required to reach next level</span>
+    <span class="nx">nextLevelPoints</span><span class="o">:</span> <span class="s1">'42'</span>
+    <span class="c1">// Level icon</span>
+    <span class="nx">name</span><span class="o">:</span> <span class="s1">'https://url-to-lvl-icon'</span><span class="p">,</span>
+   <span class="p">}</span>
+<span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+
+<h2>
+<a name="leaderboards" class="anchor" href="#leaderboards"><span class="octicon octicon-link"></span></a>Leaderboards</h2>
+
+<p><strong>Note:</strong> If you want to test you leaderboard results, you can directly use <a href="http://dashboard.behave.io/#/simulator">the built-in simulator</a> to test API calls.</p>
+
+<h3>
+<a name="getting-leaderboard-current-results" class="anchor" href="#getting-leaderboard-current-results"><span class="octicon octicon-link"></span></a>Getting leaderboard current results</h3>
+
+<p>You can fetch the actual results of any leaderboard at anytime. Here is an example:</p>
+
+<ul>
+<li>
+<strong>Method:</strong> behave.fetchLeaderboardResults(leaderboardId, [options], [callbacl])</li>
+<li><strong>Parameters:</strong></li>
+</ul><table>
+<thead><tr>
+<th>Name</th>
+<th align="center">Type</th>
+<th align="right">Value</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>leaderboardId</td>
+<td align="center">String</td>
+<td align="right">
+<strong>(Required)</strong> The reference_id or id of the leaderboard</td>
+</tr>
+<tr>
+<td>options</td>
+<td align="center">Object</td>
+<td align="right">
+<strong>(Optional)</strong> Result fetching options</td>
+</tr>
+</tbody>
+</table><p>Example</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">behave</span><span class="p">.</span><span class="nx">fetchLeaderboardResults</span><span class="p">(</span><span class="s1">'points'</span><span class="p">,</span> <span class="p">{</span> <span class="nx">max</span><span class="o">:</span> <span class="mi">500</span> <span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">results</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// Use results</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>Available options are:</p>
+
+<table>
+<thead><tr>
+<th>Name</th>
+<th align="center">Type</th>
+<th align="right">Value</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>page</td>
+<td align="center">Number</td>
+<td align="right">(Optional) The results page to fetch. Default is 1</td>
+</tr>
+<tr>
+<td>limit</td>
+<td align="center">Number</td>
+<td align="right">(Optional) The max number of results per page. MAXIMUM is 1000</td>
+</tr>
+<tr>
+<td>max</td>
+<td align="center">Number</td>
+<td align="right">(Optional) The maximum position to fetch, default is 0 =&gt; None</td>
+</tr>
+<tr>
+<td>player_id</td>
+<td align="center">String</td>
+<td align="right">A player's reference_id (Optional). If specified, the given player will ALWAYS appear in the results (not duplicated). It is very useful if for example you want to always include the current player in the results</td>
+</tr>
+<tr>
+<td>players</td>
+<td align="center">Array[String]</td>
+<td align="right">(Optional) The players to include in the results, default is null =&gt; ALL</td>
+</tr>
+<tr>
+<td>positions</td>
+<td align="center">String</td>
+<td align="right">(Optional) The way positions are calculated. Possible values are <code>relative</code> and <code>absolute</code>. <code>relative</code> will set the positions according to the players that are included in the results, <code>absolute</code> will set the positions according to all the players in the leaderboards. This is useful when for example you want to fetch the results for a player and his friends only. In this situation you could pass <code>relative</code> so that the positions are computed between friends and not between all the players in the leaderboards.</td>
+</tr>
+<tr>
+<td>context</td>
+<td align="center">Object</td>
+<td align="right">(Optional) You can segment results according to a specific context. For example, on a leaderboard with <code>all-time</code> timeframe, if you want to get the results of weeks 42 only you could have <code>{ timestamp: '&gt;=1381701600,&lt;1382306400' }</code>. You can also use any custom key you have specified in the context when tracking behaviours using <code>track()</code>.  <strong>On large leaderboards this can have an impact on performances.</strong>
+</td>
+</tr>
+</tbody>
+</table><p>Results structure will look like this</p>
+
+<div class="highlight highlight-javascript"><pre><span class="p">[</span>
+  <span class="p">{</span>
+    <span class="nx">score</span> <span class="o">:</span> <span class="mi">129</span><span class="p">,</span>
+    <span class="nx">position</span> <span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nx">player</span> <span class="o">:</span> <span class="p">{</span>
+      <span class="nx">_id</span> <span class="o">:</span> <span class="s2">"529fe03ecbd86b9d6c000002"</span><span class="p">,</span>
+      <span class="nx">reference_id</span> <span class="o">:</span> <span class="s1">'42'</span><span class="p">,</span>
+      <span class="nx">traits</span> <span class="o">:</span>
+        <span class="nx">name</span> <span class="o">:</span> <span class="s1">'Olivier Thierry'</span><span class="p">,</span>
+        <span class="nx">email</span> <span class="o">:</span> <span class="s1">'olivier@behave.io'</span>
+      <span class="p">},</span>
+      <span class="nx">identities</span> <span class="o">:</span> <span class="p">{</span>
+         <span class="nx">facebook</span> <span class="o">:</span> <span class="mi">12323</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="p">{</span>
+    <span class="nx">score</span> <span class="o">:</span> <span class="mi">102</span><span class="p">,</span>
+    <span class="nx">position</span> <span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="nx">player</span> <span class="o">:</span> <span class="p">{</span>
+      <span class="nx">_id</span> <span class="o">:</span> <span class="s2">"947pg03ecbd86b9d6c05520"</span><span class="p">,</span>
+      <span class="nx">reference_id</span> <span class="o">:</span> <span class="s1">'43'</span><span class="p">,</span>
+      <span class="nx">traits</span> <span class="o">:</span> <span class="p">{</span>
+        <span class="nx">name</span> <span class="o">:</span> <span class="nx">Olivier</span> <span class="nx">Jeandel</span><span class="s1">',</span>
+<span class="s1">        email : '</span><span class="nx">jide</span><span class="err">@</span><span class="nx">behave</span><span class="p">.</span><span class="nx">io</span><span class="err">'</span>
+      <span class="p">},</span>
+      <span class="nx">identities</span> <span class="o">:</span> <span class="p">{</span>
+         <span class="nx">facebook</span> <span class="o">:</span> <span class="mi">5435</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+
+<h3>
+<a name="getting-leaderboard-results-for-the-currently-identified-player" class="anchor" href="#getting-leaderboard-results-for-the-currently-identified-player"><span class="octicon octicon-link"></span></a>Getting leaderboard results for the currently identified player</h3>
+
+<p>You can also fetch results for a particular player. Let's say you want to fetch the results of a player on one, many or even ALL the leaderboards <strong>the player is in</strong> then you can use this to do so.</p>
+
+<ul>
+<li>
+<strong>Method:</strong> behave.player.fetchLeaderboardResults([options], callback)</li>
+<li>
+<strong>Parameters:</strong> </li>
+</ul><table>
+<thead><tr>
+<th>Name</th>
+<th align="center">Type</th>
+<th align="right">Value</th>
+</tr></thead>
+<tbody><tr>
+<td>options</td>
+<td align="center">Object</td>
+<td align="right">
+<strong>(Optional)</strong> Result fetching options</td>
+</tr></tbody>
+</table><p>Available options are:</p>
+
+<table>
+<thead><tr>
+<th>Name</th>
+<th align="center">Type</th>
+<th align="right">Value</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>leaderboards</td>
+<td align="center">Array[String]</td>
+<td align="right">(Optional) Leaderboards to process, if empty all the leaderboards will be processed.</td>
+</tr>
+<tr>
+<td>max</td>
+<td align="center">Number</td>
+<td align="right">(Optional) The maximum player position acceptance for the leaderboard to be selected.</td>
+</tr>
+</tbody>
+</table><p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">behave</span><span class="p">.</span><span class="nx">player</span><span class="p">.</span><span class="nx">fetchLeaderboardResults</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">results</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// use results</span>
+<span class="p">});</span>
+
+<span class="c1">// results will look like this</span>
+<span class="p">[</span>
+  <span class="p">{</span>
+     <span class="s2">"leaderboard"</span> <span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"_id"</span> <span class="o">:</span> <span class="s2">"529fff1156ce248366000006"</span><span class="p">,</span>
+        <span class="s2">"reference_id"</span> <span class="o">:</span> <span class="s2">"leaderboard1"</span>
+     <span class="p">},</span>
+     <span class="err">#</span> <span class="nx">Player</span><span class="s1">'s position</span>
+<span class="s1">     "position" : 2,</span>
+<span class="s1">     # Player'</span><span class="nx">s</span> <span class="nx">updated</span> <span class="nx">score</span>
+     <span class="s2">"score"</span> <span class="o">:</span> <span class="mi">435</span>
+  <span class="p">},</span>
+  <span class="p">{</span>
+     <span class="s2">"leaderboard"</span> <span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"_id"</span> <span class="o">:</span> <span class="s2">"876fff1156ce248366000367"</span><span class="p">,</span>
+        <span class="s2">"reference_id"</span> <span class="o">:</span> <span class="s2">"leaderboard2"</span>
+     <span class="p">},</span>
+     <span class="s2">"position"</span> <span class="o">:</span> <span class="mi">18</span><span class="p">,</span>
+     <span class="s2">"score"</span> <span class="o">:</span> <span class="mi">114</span>
+  <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+
+<p>For example, if I want to fetch all the leaderboard results for playerr where he/she is in the top 3:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">behave</span><span class="p">.</span><span class="nx">player</span><span class="p">.</span><span class="nx">fetchLeaderboardResults</span><span class="p">({</span>
+  <span class="nx">max</span><span class="o">:</span> <span class="mi">3</span>
+<span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">results</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// Use results</span>
+<span class="p">});</span>
+</pre></div>
+
+<h3>
+<a name="iterating-leaderboard-results" class="anchor" href="#iterating-leaderboard-results"><span class="octicon octicon-link"></span></a>Iterating leaderboard results</h3>
+
+<p><code>behave.fetchLeaderboardResults()</code> is enough when you want to fetch 1 page of 1000 entries maximum. If you want to iterate trough more results for a leaderboards you can use <code>Behave::iterateLeaderboardResults()</code> instead.</p>
+
+<ul>
+<li>The <strong>structure</strong> is identical to <code>behave.fetchLeaderboardResults()</code>
+</li>
+<li>The <strong>options</strong> are identical to <code>behave.fetchLeaderboardResults()</code>
+</li>
+</ul><p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">behave</span><span class="p">.</span><span class="nx">iterateLeaderboardResults</span><span class="p">(</span><span class="s1">'points'</span><span class="p">,</span> <span class="p">{</span> <span class="nx">limit</span><span class="o">:</span> <span class="mi">100</span> <span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">results</span><span class="p">,</span> <span class="nx">page</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// Use the results (1 page of 100 max)</span>
+<span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// Completed! or error</span>
+<span class="p">});</span>
+</pre></div>
+
+<h2>
+<a name="badges" class="anchor" href="#badges"><span class="octicon octicon-link"></span></a>Badges</h2>
+
+<h3>
+<a name="getting-unlocked-badges-of-the-currently-identified-player" class="anchor" href="#getting-unlocked-badges-of-the-currently-identified-player"><span class="octicon octicon-link"></span></a>Getting UNLOCKED badges of the currently identified player</h3>
+
+<ul>
+<li>
+<strong>Method:</strong> behave.player.fetchBadges(callback)</li>
+</ul><p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">behave</span><span class="p">.</span><span class="nx">player</span><span class="p">.</span><span class="nx">fetchBadges</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">badges</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// Use badges</span>
+<span class="p">});</span>
+
+<span class="c1">// Example Response</span>
+<span class="p">[</span>
+    <span class="p">{</span>
+      <span class="c1">// Reward id</span>
+      <span class="s2">"_id"</span><span class="o">:</span> <span class="s2">"530007cf0af9fbcf2d58e779"</span><span class="p">,</span>
+
+      <span class="c1">// Reward owner (the player)</span>
+      <span class="s2">"player"</span><span class="o">:</span> <span class="s2">"530006e4f27bfdb92dc3eac1"</span><span class="p">,</span>
+
+      <span class="c1">// Last time the badge was unlocked (unix timestamp)</span>
+      <span class="s2">"lastUnlockedAt"</span><span class="o">:</span> <span class="mi">1392510927</span><span class="p">,</span>
+
+      <span class="c1">// The number of times this badges has been unlocked by this player</span>
+      <span class="s2">"count"</span><span class="o">:</span> <span class="mi">1</span>
+
+      <span class="c1">// The reward's badge </span>
+      <span class="s2">"badge"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="c1">// Badge id</span>
+        <span class="s2">"_id"</span><span class="o">:</span> <span class="s2">"52b83490739f878842000014"</span><span class="p">,</span>
+
+        <span class="c1">// Is the badge active?</span>
+        <span class="s2">"active"</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+
+        <span class="c1">// Current app</span>
+        <span class="s2">"app_id"</span><span class="o">:</span> <span class="s2">"52b0f1d32e2ce4e91100000c"</span><span class="p">,</span>
+
+        <span class="c1">// Badge Hint</span>
+        <span class="s2">"hint"</span><span class="o">:</span> <span class="s2">"Trouvez 1 mot en moins de 7 secondes."</span><span class="p">,</span>
+
+        <span class="c1">// Badge Icon</span>
+        <span class="s2">"icon"</span><span class="o">:</span> <span class="s2">"https://s3-eu-west-1.amazonaws.com/behave-production/uploads/9d05563b89934f615951bc6425f029e6.png"</span><span class="p">,</span>
+
+        <span class="c1">// The limit of unlocks that can be done (e.g limit of 10 means that maximum 10 players can unlock the badge)        </span>
+        <span class="s2">"limit"</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+
+        <span class="s2">"localization"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"fr_FR"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"Moins de 7 secondes pour 1 mot est un challenge ! Bravo."</span><span class="p">,</span>
+            <span class="s2">"hint"</span><span class="o">:</span> <span class="s2">"Trouvez 1 mot en moins de 7 secondes."</span><span class="p">,</span>
+            <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"Flash Gordon"</span><span class="p">,</span>
+            <span class="s2">"is_default"</span><span class="o">:</span> <span class="kc">false</span>
+          <span class="p">},</span>
+          <span class="s2">"en_US"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"is_default"</span><span class="o">:</span> <span class="kc">true</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+
+        <span class="c1">// Badge message (when unlocked)</span>
+        <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"Vous l'avez fait ! Moins de 7 secondes pour 1 mot est un challenge ! Bravo."</span><span class="p">,</span>
+
+        <span class="c1">// Badge name</span>
+        <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"Flash Gordon"</span><span class="p">,</span>
+
+        <span class="c1">// Badge reference_id</span>
+        <span class="s2">"reference_id"</span><span class="o">:</span> <span class="s2">"flash-gordon"</span><span class="p">,</span>
+
+        <span class="c1">// Badge social bindings (OpenGraph) if enabled from the dashboard</span>
+        <span class="s2">"social"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"facebook"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"ogType"</span><span class="o">:</span> <span class="s2">"pics-n-words:badge"</span><span class="p">,</span>
+            <span class="c1">// Badge id in the facebook opengraph</span>
+            <span class="s2">"ogId"</span><span class="o">:</span> <span class="s2">"775995212414594"</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+
+        <span class="c1">// Is the badge unique? (can be unlocked once per player)</span>
+        <span class="s2">"unique"</span><span class="o">:</span> <span class="kc">true</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="c1">// ...</span>
+</pre></div>
+
+<h3>
+<a name="getting-locked-badges-of-the-currently-identified-player" class="anchor" href="#getting-locked-badges-of-the-currently-identified-player"><span class="octicon octicon-link"></span></a>Getting LOCKED badges of the currently identified player</h3>
+
+<ul>
+<li>
+<strong>Method:</strong> behave.player.fetchLockedBadges(callbacl)</li>
+</ul><p>Example:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">behave</span><span class="p">.</span><span class="nx">fetchLockedBadges</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">lockedBadges</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// Use lockedBadges ...</span>
+<span class="p">});</span>
+
+<span class="c1">// Example Response</span>
+<span class="p">{</span>
+  <span class="s2">"data"</span><span class="o">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="c1">// Badge id</span>
+      <span class="s2">"_id"</span><span class="o">:</span> <span class="s2">"52b838c8739f87884200001c"</span><span class="p">,</span>
+
+      <span class="c1">// Current app id</span>
+      <span class="s2">"app_id"</span><span class="o">:</span> <span class="s2">"52b0f1d32e2ce4e91100000c"</span><span class="p">,</span>
+
+      <span class="c1">// Badge Hint</span>
+      <span class="s2">"hint"</span><span class="o">:</span> <span class="s2">"Watch a video trailer in the shop"</span><span class="p">,</span>
+
+      <span class="c1">// Badge Icon</span>
+      <span class="s2">"icon"</span><span class="o">:</span> <span class="s2">"https://s3-eu-west-1.amazonaws.com/behave-production/uploads/6827c5d570dece337c123fcf9447abf7.png"</span><span class="p">,</span>
+
+      <span class="c1">// Badge message (when unlocked)</span>
+      <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"Yeah! You like trailers and mobile games but do you like words?!"</span><span class="p">,</span>
+
+      <span class="c1">// Badge name</span>
+      <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"Trailer lover"</span><span class="p">,</span>
+
+      <span class="c1">// Badge reference_id</span>
+      <span class="s2">"reference_id"</span><span class="o">:</span> <span class="s2">"trailer-lover"</span><span class="p">,</span>
+
+      <span class="c1">// Badge localizations (if enabled from the dashboard)</span>
+      <span class="s2">"localization"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"fr_FR"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"Vous aimez les vidéos et les apps mais aimez-vous les mots ?"</span><span class="p">,</span>
+          <span class="s2">"hint"</span><span class="o">:</span> <span class="s2">"Regardez une video depuis la boutique."</span><span class="p">,</span>
+          <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"Trailer lover"</span><span class="p">,</span>
+          <span class="s2">"is_default"</span><span class="o">:</span> <span class="kc">false</span>
+        <span class="p">},</span>
+        <span class="s2">"en_US"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"is_default"</span><span class="o">:</span> <span class="kc">true</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+
+      <span class="c1">// Badge social bindings (OpenGraph) if enabled from the dashboard</span>
+      <span class="s2">"social"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"facebook"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"ogType"</span><span class="o">:</span> <span class="s2">"pics-n-words:badge"</span><span class="p">,</span>
+          <span class="c1">// Badge id in the facebook opengraph</span>
+          <span class="s2">"ogId"</span><span class="o">:</span> <span class="s2">"1413403995564661"</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+
+      <span class="c1">// Is the badge active?</span>
+      <span class="s2">"active"</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+
+      <span class="err">#</span> <span class="nx">Is</span> <span class="nx">the</span> <span class="nx">badge</span> <span class="nx">unique</span><span class="o">?</span> <span class="p">(</span><span class="nx">can</span> <span class="nx">be</span> <span class="nx">unlocked</span> <span class="nx">once</span> <span class="nx">per</span> <span class="nx">player</span><span class="p">)</span>
+      <span class="s2">"unique"</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+
+      <span class="err">#</span> <span class="nx">The</span> <span class="nx">limit</span> <span class="nx">of</span> <span class="nx">unlocks</span> <span class="nx">that</span> <span class="nx">can</span> <span class="nx">be</span> <span class="nx">done</span> <span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">g</span> <span class="nx">limit</span> <span class="nx">of</span> <span class="mi">10</span> <span class="nx">means</span> <span class="nx">that</span> <span class="nx">maximum</span> <span class="mi">10</span> <span class="nx">players</span> <span class="nx">can</span> <span class="nx">unlock</span> <span class="nx">the</span> <span class="nx">badge</span><span class="p">)</span>
+      <span class="s2">"limit"</span><span class="o">:</span> <span class="mi">0</span>
+    <span class="p">},</span>
+    <span class="c1">// ...</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+
+<h2>
+<a name="events" class="anchor" href="#events"><span class="octicon octicon-link"></span></a>Events</h2>
+
+<h3>
+<a name="realtime-sdk-events" class="anchor" href="#realtime-sdk-events"><span class="octicon octicon-link"></span></a>Realtime SDK events</h3>
+
+<p>The JavaScript SDK publishes many events that your app can listen in order to update its state and the UI</p>
+
+<table>
+<thead><tr>
+<th>Event name</th>
+<th align="center">Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>player:identified</td>
+<td align="center">Published when the player is fully identified / when its traits have been updated</td>
+</tr>
+<tr>
+<td>reward:points</td>
+<td align="center">Called when the player has earned points.</td>
+</tr>
+<tr>
+<td>reward:badge</td>
+<td align="center">Called when the player has unlocked a badge. the badge object is passed as parameter to the handler</td>
+</tr>
+<tr>
+<td>reward:level</td>
+<td align="center">Called when the player levels up!. the level object is passed as parameter to the handler</td>
+</tr>
+</tbody>
+</table><h3>
+<a name="subscribing-to-an-event" class="anchor" href="#subscribing-to-an-event"><span class="octicon octicon-link"></span></a>Subscribing to an event</h3>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">behave</span><span class="p">.</span><span class="nx">events</span><span class="p">.</span><span class="nx">subscribe</span><span class="p">(</span><span class="s1">'reward:points'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">points</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Earned: '</span><span class="p">,</span> <span class="nx">points</span><span class="p">.</span><span class="nx">earned</span><span class="p">);</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Balance: '</span><span class="p">,</span> <span class="nx">points</span><span class="p">.</span><span class="nx">balance</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+
+<h3>
+<a name="unsubscribing-from-an-event" class="anchor" href="#unsubscribing-from-an-event"><span class="octicon octicon-link"></span></a>Unsubscribing from an event</h3>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">behave</span><span class="p">.</span><span class="nx">events</span><span class="p">.</span><span class="nx">unubscribe</span><span class="p">(</span><span class="s1">'reward:points'</span><span class="p">,</span> <span class="nx">handler</span><span class="p">);</span>
+</pre></div>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="http://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		
+  </body>
+</html>
