@@ -91,14 +91,20 @@
 <a name="initializing-the-sdk" class="anchor" href="#initializing-the-sdk"><span class="octicon octicon-link"></span></a>Initializing the SDK</h3>
 
 <p>Before starting to do anything, you need to initialize the SDK with a valid API access token.
-You can find the token from your dashboard within the app settings.</p>
+You can find the API token <a href="http://dashboard.behave.io/#/settings" target="_blank">from your dashboard in your app settings</a>.</p>
 
 <p>Within the <code>&lt;head&gt;&lt;/head&gt;</code> tag insert the following code to load the library</p>
 
-<div class="highlight highlight-javascript"><pre><span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">"https://s3-eu-west-1.amazonaws.com/behave-production/libs/js/1.1.0/behave.js"</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+<div class="highlight highlight-javascript"><pre><span class="c">&lt;!--</span> <span class="nx">OPTIONAL</span> <span class="nx">but</span> <span class="nx">make</span> <span class="nx">sure</span> <span class="nx">you</span> <span class="nx">are</span> <span class="nx">including</span> <span class="nx">jQuery</span> <span class="k">in</span> <span class="nx">your</span> <span class="nx">project</span> <span class="o">--&gt;</span>
+<span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">"//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+
+<span class="c">&lt;!--</span> <span class="nx">Behave</span> <span class="nx">JS</span> <span class="nx">SDK</span> <span class="o">--&gt;</span>
+<span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">"//d2xjmhu9gtl3es.cloudfront.net/libs/js/1.1.0/behave.js"</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+<span class="c">&lt;!--</span> <span class="nx">Behave</span> <span class="nx">CSS</span> <span class="o">--&gt;</span>
+<span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">"//d2xjmhu9gtl3es.cloudfront.net/libs/js/1.1.0/behave.css"</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
 </pre></div>
 
-<p>In the <code>&lt;body&gt;&lt;/body&gt;</code> tag, insert the code and replace <em>YOUR_API_TOKEN</em> by your API token</p>
+<p>In the <code>&lt;body&gt;&lt;/body&gt;</code> tag, insert the code and replace <em>YOUR_API_TOKEN</em> by your API Token.</p>
 
 <div class="highlight highlight-javascript"><pre><span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
   <span class="nx">behave</span><span class="p">.</span><span class="nx">init</span><span class="p">(</span><span class="s1">'YOUR_API_TOKEN'</span><span class="p">);</span>
@@ -727,10 +733,10 @@ You can find the token from your dashboard within the app settings.</p>
       <span class="c1">// Is the badge active?</span>
       <span class="s2">"active"</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
 
-      <span class="err">#</span> <span class="nx">Is</span> <span class="nx">the</span> <span class="nx">badge</span> <span class="nx">unique</span><span class="o">?</span> <span class="p">(</span><span class="nx">can</span> <span class="nx">be</span> <span class="nx">unlocked</span> <span class="nx">once</span> <span class="nx">per</span> <span class="nx">player</span><span class="p">)</span>
+      <span class="c1">// Is the badge unique? (can be unlocked once per player)</span>
       <span class="s2">"unique"</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
 
-      <span class="err">#</span> <span class="nx">The</span> <span class="nx">limit</span> <span class="nx">of</span> <span class="nx">unlocks</span> <span class="nx">that</span> <span class="nx">can</span> <span class="nx">be</span> <span class="nx">done</span> <span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">g</span> <span class="nx">limit</span> <span class="nx">of</span> <span class="mi">10</span> <span class="nx">means</span> <span class="nx">that</span> <span class="nx">maximum</span> <span class="mi">10</span> <span class="nx">players</span> <span class="nx">can</span> <span class="nx">unlock</span> <span class="nx">the</span> <span class="nx">badge</span><span class="p">)</span>
+      <span class="c1">// The limit of unlocks that can be done (e.g limit of 10 means that maximum 10 players can unlock the badge)</span>
       <span class="s2">"limit"</span><span class="o">:</span> <span class="mi">0</span>
     <span class="p">},</span>
     <span class="c1">// ...</span>
