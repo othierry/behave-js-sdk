@@ -4,7 +4,7 @@
 
   var EventEmitter = function(eventNames) {
     var self = this;
-    self.subscribers = {}
+    self.subscribers = {};
     eventNames.forEach(function(eventName) {
       self.subscribers[eventName] = [];
     });
@@ -108,15 +108,13 @@
     // Designated initializer
     // Must be called with valid access token before any another methods
     // @param string token : Your API token
-    // @param options object : Optional options that may include:
-    //    -> handlesTrackingResponse (boolean) : True by default, if set to true
-    //       the track() response will be automatically handled if not custom callback is given
-    //       If a badge has been unlocked, the default UI will be triggered showing the unlocked badge
-    //       to the user. You should set to false if you want to display custom UI for showing rewards and
-    //       feedbacks.
+    // @deprecated @param options object : Options
     behave.init = function(token, options) {
       behave.token = token;
       behave.options = options || {};
+      behave.realtime = {
+        enabled: false
+      };
       behave.requestQueue = behave.queue(function(request, callback) {
         if (request.params && (request.method === 'POST' || request.method === 'PUT')) {
           request.params = JSON.stringify(request.params);
@@ -147,6 +145,12 @@
           console.error("Failed to fetch app info");
         } else {
           behave.app = app;
+
+          // If 
+          if (window.Faye) {
+            behave.realtime.client  = new window.Faye.Client(behave.API_ROOT + '/realtime');
+            behave.realtime.enabled = true;
+          }
         }
       }));
 
@@ -179,7 +183,7 @@
       if (!behave.assertInitialized(callback)) return;
 
       if (!userId) {
-        console.log("Error behave.identify() userId cannot be null");
+        console.error("Error behave.identify() userId cannot be null");
         return;
       }
 
@@ -209,6 +213,21 @@
         behave.player.level       = result.level;
         behave.player.points      = result.points;
 
+        if (behave.realtime.enabled) {
+          // Cancel existing subscription if necessary
+          if (behave.realtime.channelSubscription) {
+            behave.realtime.channelSubscription.cancel();
+          }
+          
+          // Format: ":app_id/:player_reference_id/rewards"
+          var channel = '/' + result.app_id + '/' + behave.player.referenceId + '/rewards';
+
+          // Register and delegate handling to behave.handleTrackingResponse()
+          behave.realtime.channelSubscription = behave.realtime.client.subscribe(channel, function(rewards) {
+            behave.handleTrackingResponse(null, rewards);
+          });
+        }
+
         behave.events.publish('player:identified', behave.player);
 
         if (callback) { callback(err, result); }
@@ -222,10 +241,6 @@
     behave.track = function(behaviour, context, callback) {
       callback = (typeof context === 'function' ? context : callback);
       context  = (typeof context === 'object'   ? context : null);
-
-      if (!callback && behave.options.handlesTrackingResponse !== false) {
-        callback = behave.handleTrackingResponse;
-      }
 
       behave.requestQueue.push({
         path: function() {
@@ -241,10 +256,18 @@
           context: context
         }
       }, behave.responseHandler(function(err, result) {
-         if (!err && result && result.is_anonymous && behave.player.anonymous) {
+          // If player was anonymous, assign auto-generated reference_id
+          if (!err && result && result.is_anonymous && behave.player.anonymous) {
             behave.player.referenceId = result.player;
-         }
-         if (callback) { callback(err, result); }
+          }
+          
+          // Let websockets handle rewards if realtime is enabled.
+          // Handle it now otherwise.
+          if (!behave.realtime.enabled) {
+            behave.handleTrackingResponse(err, result); 
+          }
+
+          if (callback) { callback(err, result); }
       }));
     };
 
@@ -425,16 +448,26 @@
 
     behave.handleTrackingResponse = function(err, results) {
       if (!err && results) {
-        behave.player.points = results.points.balance;
-        behave.player.level  = results.level;
 
+        // We need to update everything in the player BEFORE we start triggering event
+        // this avoid triggering events when the player object is not updated yet
+        // and can lead to inconsistency issues
+        if (results.points) {
+          behave.player.points = results.points.balance;
+        }
+
+        if (results.level) {
+          behave.player.level = results.level;
+        }
+
+        // THEN we trigger necessary events
         if (results.badges.length) {
           results.badges.forEach(function(badge) {
             behave.events.publish('reward:badge', badge);            
           });
         }
 
-        if (results.points.earned > 0) {
+        if (results.points && results.points.earned > 0) {
           behave.events.publish('reward:points', results.points);
         }
 
@@ -574,76 +607,5 @@
         }.open();
       }
     }
-
-    // // DEPENDENCIES
-    // (function facebook(window, document) {
-    //   console.log('fbAsyncInit()');
-    //   window.fbAsyncInit = function() {
-    //     FB.init({
-    //       appId      : '243027555856193',
-    //       status     : true,
-    //       xfbml      : true,
-    //       authResponse: false,
-    //       cookie: true,
-    //       oauth: true
-    //     });
-
-    //     console.log('Binding FB events...');
-
-    //     // Track when embedded fb "like" button clicked
-    //     // Like
-    //     FB.Event.subscribe('edge.create', function(href, html_element) {
-    //       console.log('LIKE ', href);
-    //       window.behave.track('liked', {
-    //         page: href
-    //       });
-    //     });
-
-    //     // Unlike
-    //     FB.Event.subscribe('edge.remove', function(href, html_element) {
-    //       console.log('UNLIKE ', href);
-    //       window.behave.track('unliked', {
-    //         page: href
-    //       });
-    //     });
-    //   };
-
-      // (function(d, s, id){
-      //    var js, fjs = d.getElementsByTagName(s)[0];
-      //    if (d.getElementById(id)) {return;}
-      //    js = d.createElement(s); js.id = id;
-      //    js.src = "//connect.facebook.net/en_US/all.js";
-      //    fjs.parentNode.insertBefore(js, fjs);
-      // }(document, 'script', 'facebook-jssdk'));
-    // }(window, document));
-
-    // // DEPENDENCIES
-    // (function twitter(window, document) {
-    //   window.twttr = (function (d,s,id) {
-    //     var t, js, fjs = d.getElementsByTagName(s)[0];
-    //     if (d.getElementById(id)) return; js=d.createElement(s); js.id=id;
-    //     js.src="https://platform.twitter.com/widgets.js"; fjs.parentNode.insertBefore(js, fjs);
-    //     return window.twttr || (t = { _e: [], ready: function(f){ t._e.push(f) } });
-    //   }(document, "script", "twitter-wjs"));
-
-    //   console.log('twttr.ready()');
-    //   window.twttr.ready(function() {
-    //     console.log('Binding twttr events...');
-    //     window.twttr.events.bind('tweet', function(intentEvent) {
-    //       if (!intentEvent) return;
-    //       console.log('TWEET');
-    //       window.behave.track('tweet');
-    //     });
-    //     window.twttr.events.bind('follow', function(intentEvent) {
-    //       if (!intentEvent) return;
-    //       console.log('FOLLOW ', intentEvent.data.user_id, intentEvent.data.screen_name);
-    //       window.behave.track('follow', {
-    //         user_id: intentEvent.data.user_id,
-    //         screen_name: intentEvent.data.screen_name
-    //       });
-    //     });
-    //   });
-    //  }(window, document));
-
   }
 })(window, document);
