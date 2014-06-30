@@ -58,7 +58,7 @@
     behave.identify(this.referenceId, this.traits);
   };
 
-  Player.prototype.get - function(traitName) {
+  Player.prototype.get = function(traitName) {
     return this.traits[traitName];
   };
 
@@ -145,10 +145,14 @@
           console.error("Failed to fetch app info");
         } else {
           behave.app = app;
-
-          // If 
           if (window.Faye) {
             behave.realtime.client  = new window.Faye.Client(behave.API_ROOT + '/realtime');
+            behave.realtime.client.addExtension({
+              outgoing: function(message, callback) {
+                message.ext = { token: behave.token };
+                callback(message);
+              }
+            });
             behave.realtime.enabled = true;
           }
         }
@@ -190,9 +194,7 @@
       var request;
       if (behave.player.anonymous && behave.player.isIdentified()) {
         request = {
-          path: function() {
-            return '/players/' + behave.player.referenceId + '/reidentify';
-          },
+          path: '/players/' + behave.player.referenceId + '/reidentify',
           method: 'POST',
           params: { new_reference_id: userId, traits: traits  }
         };
@@ -225,6 +227,11 @@
           // Register and delegate handling to behave.handleTrackingResponse()
           behave.realtime.channelSubscription = behave.realtime.client.subscribe(channel, function(rewards) {
             behave.handleTrackingResponse(null, rewards);
+          });
+
+          // Handle subscription error cases (unauthorized etc...)
+          behave.realtime.channelSubscription.errback(function(res) {
+            console.error(res.message);
           });
         }
 
@@ -467,7 +474,7 @@
           });
         }
 
-        if (results.points && results.points.earned > 0) {
+        if (results.points && results.points.earned != 0) {
           behave.events.publish('reward:points', results.points);
         }
 
