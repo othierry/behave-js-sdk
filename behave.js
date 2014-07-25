@@ -230,8 +230,8 @@
           });
 
           // Handle subscription error cases (unauthorized etc...)
-          behave.realtime.channelSubscription.errback(function(res) {
-            console.error(res.message);
+          behave.realtime.channelSubscription.errback(function(err) {
+            console.error(err.message);
           });
         }
 
@@ -339,6 +339,7 @@
 
       behave.requestQueue.push({
         path: '/leaderboards/' + leaderboardId + '/results',
+        method: 'POST',
         params: options
       }, behave.responseHandler(callback));
     };
